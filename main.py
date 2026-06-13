@@ -31,6 +31,7 @@ divider = pygame.Rect(width//2-5,0,10,height)
 
 #creating characters
 class Player(pygame.sprite.Sprite):
+    #creating properties/attributes
     def __init__(self,x,y,image_path,controls,side):
         #initialising the init function of parent class
         super().__init__()
@@ -44,14 +45,57 @@ class Player(pygame.sprite.Sprite):
         self.bullets = pygame.sprite.Group
 
     def move(self,keys):
-        pass
+        if keys[self.controls["left"]]:
+            self.rect.x -= playerspeed
+        if keys[self.controls["right"]]:
+            self.rect.x += playerspeed
+        if keys[self.controls["down"]]:
+            self.rect.y -= playerspeed
+        if keys[self.controls["up"]]:
+            self.rect.y += playerspeed
+        
+        #screen boundaries
+        self.rect.top= max(0,self.rect.top)
+        self.rect.bottom= min(height,self.rect.bottom)
+        if self.side == "left":
+            self.rect.left= max(0,self.rect.left)
+            self.rect.right= min(divider.left,self.rect.right)
+        else:
+            self.rect.left= max(divider.right, self.rect.left)
+            self.rect.right= min(width, self.rect.right)
 
+#creating player objects
+plyrone = Player(
+    100,
+    200,
+    "images\cowboyleft.png",
+    {"left":pygame.K_a,
+      "down":pygame.K_s, 
+      "up":pygame.K_w, 
+      "right":pygame.K_d},
+    "left"
+    )
 
+plyrtwo = Player(
+    600,
+    200,
+    "images\cowboyright.png",
+    {"left":pygame.K_LEFT,
+      "down":pygame.K_DOWN, 
+      "up":pygame.K_UP, 
+      "right":pygame.K_RIGHT},
+    "right"
+    )
+
+#creating players' group
+players = pygame.sprite.Group()
+players.add(plyrone, plyrtwo)
 
 def draw():
     screen.blit(bg_img,(0,0))
     #display divide
     pygame.draw.rect(screen,"black", divider)
+    players.draw(screen)
     pygame.display.update()
 
 

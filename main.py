@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         self.controls = controls
         self.side = side
         self.hp = hp
-        self.bullets = pygame.sprite.Group
+        self.bullets = pygame.sprite.Group()
 
     def move(self,keys):
         if keys[self.controls["left"]]:
@@ -50,9 +50,9 @@ class Player(pygame.sprite.Sprite):
         if keys[self.controls["right"]]:
             self.rect.x += playerspeed
         if keys[self.controls["down"]]:
-            self.rect.y -= playerspeed
-        if keys[self.controls["up"]]:
             self.rect.y += playerspeed
+        if keys[self.controls["up"]]:
+            self.rect.y -= playerspeed
         
         #screen boundaries
         self.rect.top= max(0,self.rect.top)
@@ -63,6 +63,12 @@ class Player(pygame.sprite.Sprite):
         else:
             self.rect.left= max(divider.right, self.rect.left)
             self.rect.right= min(width, self.rect.right)
+
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self,x,y,direction ):
+        super().__init__()
+
 
 #creating player objects
 plyrone = Player(
@@ -91,11 +97,15 @@ plyrtwo = Player(
 players = pygame.sprite.Group()
 players.add(plyrone, plyrtwo)
 
+
+
+
+
 def draw():
-    screen.blit(bg_img,(0,0))
+    screen.blit(bg_img,(0,0)) #blit means displaying bg
     #display divide
     pygame.draw.rect(screen,"black", divider)
-    players.draw(screen)
+    players.draw(screen) # drawing both playes(group) onto screen
     pygame.display.update()
 
 
@@ -110,6 +120,12 @@ def main():
                 isrunning = False
                 pygame.quit()
                 exit(0)
+        #getting all the keys that are pressed 
+        keys = pygame.key.get_pressed()
+
+        plyrone.move(keys)
+        plyrtwo.move(keys)
+
 
         draw()
 

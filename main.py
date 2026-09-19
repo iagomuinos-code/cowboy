@@ -64,10 +64,37 @@ class Player(pygame.sprite.Sprite):
             self.rect.left= max(divider.right, self.rect.left)
             self.rect.right= min(width, self.rect.right)
 
+    def shoot(self):
+        if len(self.bullets) >= maxbullet:
+            return
+        if self.side == "left":
+            bullet = Bullet(self.rect.right,self.rect.centery,1)
+
+        else :
+            bullet = Bullet(self.rect.left, self.rect.centery, -1)
+
+        #adding bullet to bullet group
+        self.bullets.add(bullet)
+
+    def update(self):
+        self.bullets.update()
+        
+        
+
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self,x,y,direction ):
         super().__init__()
+        self.image = pygame.Surface((6,4))
+        self.image.fill((255,0,0))
+        self.rect = self.image.get_rect(topleft=(x,y))
+        self.direction = direction
+
+    def update(self):
+        self.rect.x += bulletspeed * self.direction
+        if self.rect.right < 0 or self.rect.left > width :
+            self.kill()
 
 
 #creating player objects
@@ -106,6 +133,16 @@ def draw():
     #display divide
     pygame.draw.rect(screen,"black", divider)
     players.draw(screen) # drawing both playes(group) onto screen
+    #display bullets for both the players 
+    plyrone.bullets.draw(screen)
+    plyrtwo.bullets.draw(screen)
+
+    #displaying health text
+    lefttext = hpfont.render(f"Health: {plyrone.hp}",True,"black")
+    screen.blit(lefttext, (50,30))
+    righttext = hpfont.render(f"Health: {plyrone.hp}",True,"black")
+    screen.blit(righttext, (width/2 + 50,30))
+
     pygame.display.update()
 
 
@@ -120,13 +157,20 @@ def main():
                 isrunning = False
                 pygame.quit()
                 exit(0)
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LSHIFT:
+                    plyrone.shoot()
+                if event.key == pygame.K_RSHIFT:
+                    plyrtwo.shoot()
         #getting all the keys that are pressed 
         keys = pygame.key.get_pressed()
 
         plyrone.move(keys)
         plyrtwo.move(keys)
 
-
+        #updating bullet groups for players
+        players.update()
         draw()
 
 main()

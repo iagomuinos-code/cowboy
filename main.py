@@ -140,10 +140,31 @@ def draw():
     #displaying health text
     lefttext = hpfont.render(f"Health: {plyrone.hp}",True,"black")
     screen.blit(lefttext, (50,30))
-    righttext = hpfont.render(f"Health: {plyrone.hp}",True,"black")
+    righttext = hpfont.render(f"Health: {plyrtwo.hp}",True,"black")
     screen.blit(righttext, (width/2 + 50,30))
 
     pygame.display.update()
+
+
+def check_shot():
+    for bullet in plyrone.bullets:
+        if bullet.rect.colliderect(plyrtwo.rect):
+            plyrtwo.hp -= 15
+            bullet.kill()
+    for bullet in plyrtwo.bullets:
+        if bullet.rect.colliderect(plyrone.rect):
+            plyrone.hp -= 15
+            bullet.kill()
+
+def show_win(x):
+    winnertext = winnerfont.render(x,True,"black")
+    screen.blit(winnertext, (width//2-winnertext.get_width()//2,height//2-winnertext.get_height()//2))
+    pygame.display.update()
+    pygame.time.delay(5000)
+
+
+
+
 
 
 
@@ -171,6 +192,19 @@ def main():
 
         #updating bullet groups for players
         players.update()
+
+        check_shot()
+        #ending condition is checking the health of both the players 
+        if plyrone.hp <= 0 :
+            show_win("Player2 wins")
+            break
+        if plyrtwo.hp <= 0:
+            show_win("Player1 wins")
+            break
+
+        
+    
+
         draw()
 
 main()
